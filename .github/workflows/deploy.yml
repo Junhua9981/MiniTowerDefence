@@ -1,0 +1,42 @@
+# 推到 main 時部署到 Cloudflare Pages，並在 GitHub 的 Deployments 顯示線上網址。
+# 需要在 repo 的 Settings → Secrets and variables → Actions 設定：
+#   CLOUDFLARE_API_TOKEN（Cloudflare Pages 編輯權限）、CLOUDFLARE_ACCOUNT_ID
+# 沒設定 secrets 時只會登記部署紀錄（網址仍指向目前的線上版），不會上傳。
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: pages-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://mini-tower-defence.pages.dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Build static site
+        run: node tools/build-dist.mjs
+      - name: Upload to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::notice::未設定 Cloudflare secrets，略過上傳，只登記部署紀錄。"
+            exit 0
+          fi
+          npx --yes wrangler@4 pages deploy dist --project-name=mini-tower-defence --branch=main --commit-dirty=true

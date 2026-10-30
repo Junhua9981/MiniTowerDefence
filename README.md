@@ -1,5 +1,9 @@
 # 極簡塔防・日夜潮汐 — 流派版
 
+[![立即遊玩](https://img.shields.io/badge/%E7%AB%8B%E5%8D%B3%E9%81%8A%E7%8E%A9-mini--tower--defence.pages.dev-f6c56b?style=for-the-badge)](https://mini-tower-defence.pages.dev)
+
+**線上遊玩：<https://mini-tower-defence.pages.dev>**（電腦與手機都能玩，免安裝；網址加 `?unlock=all` 可直接試玩全部核心與卡片）
+
 ## 啟動
 
 - **Windows**：雙擊 `start.bat`。它會用 Node.js（沒有的話改用 Python）在背景開一個本地伺服器，並在瀏覽器打開 http://localhost:8080/ 。關掉最小化的「MiniTowerDefence server」視窗就會停止。
